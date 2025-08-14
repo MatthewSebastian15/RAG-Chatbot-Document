@@ -17,11 +17,9 @@ EMBED_MODEL = "nomic-embed-text"
 VECTORSTORE_PATH = "vectorstore"
 DOCUMENTS_PATH = "documents"
 
-# Pastikan direktori ada
 os.makedirs(DOCUMENTS_PATH, exist_ok=True)
 os.makedirs(VECTORSTORE_PATH, exist_ok=True)
 
-# ===== Inisialisasi Model (dengan caching) =====
 @st.cache_resource
 def initialize_models():
     print("Menginisialisasi model...")
@@ -32,13 +30,11 @@ def initialize_models():
 
 embeddings, llm = initialize_models()
 
-# ===== Inisialisasi Session State =====
 if "vector_store" not in st.session_state:
     st.session_state.vector_store = None
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ===== Fungsi-Fungsi Inti =====
 def process_documents(uploaded_files):
     all_chunks = []
     for uploaded_file in uploaded_files:
@@ -82,7 +78,6 @@ def get_rag_chain(vector_store):
     )
     return rag_chain
 
-# ===== Antarmuka Sidebar =====
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
     st.markdown("---")
@@ -113,16 +108,11 @@ with st.sidebar:
         
     st.markdown("---")
 
-
-# ===== Antarmuka Chat Utama =====
 st.title("💬 RAG Chatbot")
-
-# Tampilkan riwayat percakapan
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Input dari pengguna
 if prompt := st.chat_input("Ask Anything"):
     if st.session_state.vector_store is not None:
         st.session_state.messages.append({"role": "user", "content": prompt})
@@ -137,3 +127,4 @@ if prompt := st.chat_input("Ask Anything"):
         st.session_state.messages.append({"role": "assistant", "content": answer})
     else:
         st.warning("⚠️ Please upload and process the documents first before asking..")
+
