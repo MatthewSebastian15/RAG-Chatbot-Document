@@ -1,11 +1,7 @@
 import os
 import shutil
 import streamlit as st
-<<<<<<< HEAD
 from dotenv import load_dotenv
-=======
-from dotenv import load_dotenv  # <-- 1. Mengimpor library yang diperlukan
->>>>>>> 3c5237c (perubahan bentuk UI dan beberapa config di model)
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
@@ -19,13 +15,8 @@ load_dotenv()
 
 st.set_page_config(page_title="RAG Chatbot", layout="wide", initial_sidebar_state="expanded")
 
-<<<<<<< HEAD
 LLM_MODEL = os.getenv("LLM_MODEL", "qwen2:7b")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "nomic-embed-text")
-=======
-LLM_MODEL = os.getenv("LLM_MODEL", "qwen2:7b") 
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "nomic-embed-text") 
->>>>>>> 3c5237c (perubahan bentuk UI dan beberapa config di model)
 
 VECTORSTORE_PATH = "vectorstore"
 DOCUMENTS_PATH = "documents"
@@ -35,17 +26,10 @@ os.makedirs(VECTORSTORE_PATH, exist_ok=True)
 
 @st.cache_resource
 def initialize_models():
-<<<<<<< HEAD
-    """Initializes and caches the embedding and LLM models."""
     print("Initializing models...")
     embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
     llm = OllamaLLM(model=LLM_MODEL)
     print("Models successfully initialized.")
-=======
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
-    llm = OllamaLLM(model=LLM_MODEL)
-    print("Model initialized successfully")
->>>>>>> 3c5237c (perubahan bentuk UI dan beberapa config di model)
     return embeddings, llm
 
 embeddings_model, llm_model = initialize_models()
@@ -69,11 +53,7 @@ def process_documents(uploaded_files):
             chunks = text_splitter.split_documents(docs)
             all_chunks.extend(chunks)
         except Exception as e:
-<<<<<<< HEAD
             st.error(f"Error processing file {uploaded_file.name}: {e}")
-=======
-            st.error(f"Error while processing file {uploaded_file.name}: {e}")
->>>>>>> 3c5237c (perubahan bentuk UI dan beberapa config di model)
             continue
 
     if not all_chunks:
@@ -114,11 +94,7 @@ with st.sidebar:
     st.markdown("---")
 
     uploaded_files = st.file_uploader(
-<<<<<<< HEAD
         "Upload your PDF files", 
-=======
-        "Upload your PDF file", 
->>>>>>> 3c5237c (perubahan bentuk UI dan beberapa config di model)
         type=["pdf"], 
         accept_multiple_files=True,
         label_visibility="collapsed"
@@ -128,17 +104,10 @@ with st.sidebar:
         with st.spinner("🧠 Analyzing documents..."):
             st.session_state.vector_store = process_documents(uploaded_files)
             if st.session_state.vector_store:
-<<<<<<< HEAD
                 st.session_state.messages = [{"role": "assistant", "content": "Hello! Your documents are ready. What would you like to ask?"}]
                 st.success("✅ Documents successfully processed!")
             else:
                 st.error("⚠️ No documents were processed. Please check your files.")
-=======
-                st.session_state.messages = [{"role": "assistant", "content": "Halo! Dokumen Anda sudah siap. Apa yang ingin Anda tanyakan?"}]
-                st.success("✅ Document successfully processed!")
-            else:
-                st.error("⚠️ No documents were processed. Please check your files")
->>>>>>> 3c5237c (perubahan bentuk UI dan beberapa config di model)
     
     st.markdown("---")
     if st.button("🗑️ Delete Database & Chat", use_container_width=True):
@@ -159,7 +128,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-if prompt := st.chat_input("Ask anything"):
+if prompt := st.chat_input("Ask anything about your documents"):
     if st.session_state.vector_store is not None:
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
@@ -172,8 +141,4 @@ if prompt := st.chat_input("Ask anything"):
 
         st.session_state.messages.append({"role": "assistant", "content": response})
     else:
-<<<<<<< HEAD
         st.warning("⚠️ Please upload and process documents before asking a question.")
-=======
-        st.warning("⚠️ Please upload and process the documents first before asking")
->>>>>>> 3c5237c (perubahan bentuk UI dan beberapa config di model)
