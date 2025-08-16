@@ -7,6 +7,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama as OllamaLLM
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
@@ -15,6 +16,8 @@ load_dotenv()
 
 st.set_page_config(page_title="RAG Chatbot", layout="wide", initial_sidebar_state="expanded")
 
+# Load env
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama")  
 LLM_MODEL = os.environ["LLM_MODEL"]
 EMBEDDING_MODEL = os.environ["EMBEDDING_MODEL"]
 VECTORSTORE_PATH = os.environ["VECTORSTORE_PATH"]
@@ -24,9 +27,17 @@ os.makedirs(VECTORSTORE_PATH, exist_ok=True)
 
 @st.cache_resource
 def initialize_models():
-    print(f"Initializing models... LLM={LLM_MODEL}, Embeddings={EMBEDDING_MODEL}")
-    embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
-    llm = OllamaLLM(model=LLM_MODEL)
+    print(f"Initializing models... Provider={LLM_PROVIDER}, LLM={LLM_MODEL}, Embeddings={EMBEDDING_MODEL}")
+    
+    if LLM_PROVIDER == "ollama":
+        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
+        llm = OllamaLLM(model=LLM_MODEL)
+    elif LLM_PROVIDER == "gemini":
+        embeddings = GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL)
+        llm = ChatGoogleGenerativeAI(model=LLM_MODEL, temperature=0.2)
+    else:
+        raise ValueError("Unsupported LLM_PROVIDER. Use 'ollama' or 'gemini'.")
+    
     print("Models successfully initialized.")
     return embeddings, llm
 
