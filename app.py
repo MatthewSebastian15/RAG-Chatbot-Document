@@ -15,18 +15,16 @@ load_dotenv()
 
 st.set_page_config(page_title="RAG Chatbot", layout="wide", initial_sidebar_state="expanded")
 
-LLM_MODEL = os.getenv("LLM_MODEL", "qwen2:7b")
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "nomic-embed-text")
-
-VECTORSTORE_PATH = "vectorstore"
-DOCUMENTS_PATH = "documents"
-
+LLM_MODEL = os.environ["LLM_MODEL"]
+EMBEDDING_MODEL = os.environ["EMBEDDING_MODEL"]
+VECTORSTORE_PATH = os.environ["VECTORSTORE_PATH"]
+DOCUMENTS_PATH = os.environ["DOCUMENTS_PATH"]
 os.makedirs(DOCUMENTS_PATH, exist_ok=True)
 os.makedirs(VECTORSTORE_PATH, exist_ok=True)
 
 @st.cache_resource
 def initialize_models():
-    print("Initializing models...")
+    print(f"Initializing models... LLM={LLM_MODEL}, Embeddings={EMBEDDING_MODEL}")
     embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
     llm = OllamaLLM(model=LLM_MODEL)
     print("Models successfully initialized.")
@@ -91,7 +89,6 @@ def get_rag_chain(vector_store):
 
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
-    st.markdown("---")
 
     uploaded_files = st.file_uploader(
         "Upload your PDF files", 
@@ -104,12 +101,11 @@ with st.sidebar:
         with st.spinner("🧠 Analyzing documents..."):
             st.session_state.vector_store = process_documents(uploaded_files)
             if st.session_state.vector_store:
-                st.session_state.messages = [{"role": "assistant", "content": "Hello! Your documents are ready. What would you like to ask?"}]
+                st.session_state.messages = [{"role": "assistant", "content": "Hello! you can ask anything"}]
                 st.success("✅ Documents successfully processed!")
             else:
                 st.error("⚠️ No documents were processed. Please check your files.")
     
-    st.markdown("---")
     if st.button("🗑️ Delete Database & Chat", use_container_width=True):
         if os.path.exists(VECTORSTORE_PATH): shutil.rmtree(VECTORSTORE_PATH)
         if os.path.exists(DOCUMENTS_PATH): shutil.rmtree(DOCUMENTS_PATH)
@@ -120,8 +116,6 @@ with st.sidebar:
         st.success("🗑️ Database and chat history successfully deleted!")
         st.rerun()
             
-    st.markdown("---")
-
 st.title("💬 RAG Chatbot")
 
 for msg in st.session_state.messages:

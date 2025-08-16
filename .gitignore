@@ -1,2 +1,6 @@
 # Ignore environment file
 .env
+
+# Ignore vectorstore and documents
+documents/
+vectorstore/

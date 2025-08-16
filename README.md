@@ -12,5 +12,5 @@ Built with LangChain, Ollama LLM, and FAISS for efficient document processing an
 # 🛠️ Tech Stack
 - Streamlit – Interactive web interface.
 - LangChain – LLM orchestration and retrieval pipeline.
-- Ollama – Local LLMs such as qwen2:7b.
+- Ollama – Local LLMs such as deepseek-r1:1.5b.
 - FAISS – Vector store for semantic search.
